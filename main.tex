@@ -1,0 +1,105 @@
+\documentclass[10pt]{article}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath, amsfonts}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\input{lst.tex}
+
+
+\begin{document}
+\begin{center}
+{{\Large \sc Algorithms and Data Structures 02105+02326}}
+\end{center}
+\rule{\textwidth}{1pt}
+\begin{description}
+\item[Student name and id:] Roar Nind Steffensen (s144107)
+\item[Teaching assistant:] Martin Hemmingsen
+\item[Hand-in for week:] 6
+\end{description}
+
+\vspace{1cm}
+This assignment evaluates data structures containing $n$ elements with various different accessing and mutating operations possible.
+
+\section*{Exercise M1}
+
+The first task is a data structure able to perform \textsc{UpdateXFactor($H_i$, $X_i$)} and \textsc{GetXFactor($H_i$)} on the given data set as efficient as possible.
+
+Since both operations are only observing/changing a single element, this is best done using an indexed array, i.e. ArrayList from java. Since it is not requested that the array is sorted this is done in constant time, resulting in the time complexities:
+\begin{center}
+\textsc{UpdateXFactor($H_i$, $X_i$)}: $\Theta(1)$
+
+\textsc{GetXFactor($H_i$)}: $\Theta(1)$
+\end{center}
+\section*{Exercise M2}
+
+The data structure now also have to perform \textsc{HighestXFactor()} efficiently. 
+
+If we kept the data structure from previous, this would take $\Theta(n)$ time to check all elements in the array and return the biggest element.
+
+Alternatively we can use a max-heap which is guaranteed to keep the node with the highest value as the root. The consequence is that the previous operations get a bit slower. Every time an node is updated the data structure has to reestablish the heap structure which takes logarithmic time, resulting in the time complexities:
+
+\begin{center}
+\textsc{UpdateXFactor($H_i$, $X_i$)}: $\Theta(\log n)$
+
+\textsc{GetXFactor($H_i$)}: $\Theta(1)$
+
+\textsc{HighestXFactor()}: $\Theta(1)$
+\end{center}
+
+When reestablishing the heap structure after \textsc{UpdateXFactor}, the node checks it's value against it's parent's value. If the parent is smaller than the node then use bubble up, otherwise use bubble down.
+
+Since all the houses themselves do not change position og get removed, then each node in the heap can have a fixed position in memory, with only the pointers between the nodes and the values changing. This allows the \textsc{GetXFactor} operation to operate in constant time.
+
+\section*{Exercise M3}
+
+The data structure now also have to perform \textsc{XFactorAtLeast($X_{min}$)} efficiently. 
+
+The most efficient way to implement this would be a sorted, indexed array, and binary search for $X_{min}$ returning the array of elements left of the found (or not found) element, using logarithmic time. But this data structure is mediocre at performing the previous mentioned operations.
+
+Using the max-heap structure from before, we can implement this operation returning all node which has a larger or equal value than $X_{min}$. This results in half the nodes being checked on average, since the node's children only gets checked if the node has a value larger or equal to $X_{min}$. The time complexities are: 
+
+\begin{center}
+\textsc{UpdateXFactor($H_i$, $X_i$)}: $\Theta(\log n)$
+
+\textsc{GetXFactor($H_i$)}: $\Theta(1)$
+
+\textsc{HighestXFactor()}: $\Theta(1)$
+
+\textsc{XFactorAtLeast($X_{min}$)}: $\Theta(n)$
+\end{center}
+
+
+\section*{Exercise M4}
+
+The data structure now also have to perform \textsc{HighestXFactorIncludingNeighbours()} efficiently. 
+
+Extending the data structure to include this, we need pointers to the neighbours for all houses/nodes. The extension should also be contained, and not correct a house's x-factor based on the neighbours corrected x-factor since this would result in a never ending loop. Therefore the new x-factor will be based on the neighbouring houses base x-factor (original x-factor before correcting for neighbours). With this extension, we can have each node with a base x-factor and an corrected x-factor with the latter being the dominant factor when reestablishing the heap structure. 
+
+All in all, the nodes contain pointers to the parent, children, neighbours (with respect to the houses), base x-factor and corrected x-factor.
+
+Whenever \textsc{UpdateXFactor} is performed the node's base x-factor is changed and the neighbours of the node are also corrected.
+
+With this data structure it not possible to perform \textsc{HighestXFactor} which means that both data structures need to be stored, and updated. This means that both structures needs to be updated for each mutating operation, but since it is a constant factor, it does not change the time complexity. The memory used is also a constant factor meaning we still use linear space. 
+
+With this in mind, it is also possible to perform \textsc{XFactorAtLeastIncludingNeighbours($X_{min}$)} and \textsc{GetXFactorIncludingNeighbours($H_i$)} with the same time complexities as before since these are not mutating but accessing operations. Time complexities are: 
+
+
+\begin{center}
+\textsc{UpdateXFactor($H_i$, $X_i$)}: $\Theta(\log n)$
+
+\textsc{GetXFactor($H_i$)}: $\Theta(1)$
+
+\textsc{GetXFactorIncludingNeighbours($H_i$)}: $\Theta(1)$
+
+\textsc{HighestXFactor()}: $\Theta(1)$
+
+\textsc{HighestXFactorIncludingNeighbours()}: $\Theta(1)$
+
+\textsc{XFactorAtLeast($X_{min}$)}: $\Theta(n)$
+
+\textsc{XFactorAtLeastIncludingNeighbours($X_{min}$)}: $\Theta(n)$
+\end{center}
+
+\end{document}
